@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_app/providers/auth.dart';
-import 'package:shop_app/providers/cart.dart';
-import 'package:shop_app/providers/orders.dart';
-import 'package:shop_app/providers/product.dart';
-import 'package:shop_app/screens/cart_screen.dart';
-import 'package:shop_app/screens/edit_product_screen.dart';
 
+import './providers/auth.dart';
+import './providers/cart.dart';
+import './providers/orders.dart';
+import './providers/product.dart';
+import './screens/cart_screen.dart';
+import './screens/edit_product_screen.dart';
+import './screens/splash_screen.dart';
 import './screens/products_overview_screen.dart';
 import './screens/product_detail_screen.dart';
 import './providers/products_provider.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
             value: Auth(),
           ),
           ChangeNotifierProxyProvider<Auth, Products>(
+            create: (_) => Products('', [], ''),
             update: (ctx, auth, previousProducts) => Products(
                 auth.token,
                 previousProducts == null ? [] : previousProducts.items,
@@ -36,6 +38,7 @@ class MyApp extends StatelessWidget {
             create: (ctx) => Cart(),
           ),
           ChangeNotifierProxyProvider<Auth, Orders>(
+            create: (_) => Orders('', [], ''),
             update: (ctx, auth, previousOrders) => Orders(
               auth.token,
               previousOrders == null ? [] : previousOrders.orders,
@@ -57,7 +60,15 @@ class MyApp extends StatelessWidget {
               accentColor: Colors.deepOrange,
               fontFamily: 'Lato',
             ),
-            home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+            home: auth.isAuth
+                ? ProductsOverviewScreen()
+                : FutureBuilder(
+                    future: auth.tryAutoLogin(),
+                    builder: (ctx, authResultSnapshot) =>
+                        authResultSnapshot.connectionState ==
+                                ConnectionState.waiting
+                            ? SplashScreen()
+                            : AuthScreen()),
             routes: {
               ProductDetailsScreen.routeName: (ctx) => ProductDetailsScreen(),
               CartScreen.routeName: (ctx) => CartScreen(),
