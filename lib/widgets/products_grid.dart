@@ -6,13 +6,16 @@ import '../providers/products_provider.dart';
 import './product_item.dart';
 
 class ProductsGrid extends StatelessWidget {
+  final bool showFavs;
+
+  ProductsGrid(this.showFavs);
   @override
   Widget build(BuildContext context) {
     final productsData = Provider.of<Products>(context);
     /*goes up the widget tree and searches through parent widgets till it 
     finds and creates a direct access to the change notifier provider of type 
     products (in main.dart) */
-    final products = productsData.items;
+    final products = showFavs ? productsData.favoriteItems : productsData.items;
     //the list of items we work with
     return GridView.builder(
         padding: const EdgeInsets.all(10.0),
@@ -24,8 +27,14 @@ class ProductsGrid extends StatelessWidget {
         ),
         //defines how the grid should be structured
         itemCount: products.length,
-        itemBuilder: (ctx, i) => ChangeNotifierProvider(
-              create: (c) => products[i],
+        itemBuilder: (ctx, i) => ChangeNotifierProvider.value(
+              // create: (c) => products[i],
+              value: products[i],
+              //does'nt require context
+              /*This method works better for gridsview or listview 
+              because it keeps up with the recycled widgets(flutter recycles
+              widgets that overflow off the screen in these builders)
+               when data changes while the normal method will give errors*/
               child: ProductItem(
                   // products[i].id,
                   // products[i].title,
