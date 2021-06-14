@@ -126,6 +126,7 @@ class _AuthCardState extends State<AuthCard>
     );
     //"this" is available because of the mixin("with") single ticker.
     //vsync uses to find out if object is visible and also when frame is due
+    //changed to animated controller so not needed
     _heightAnimation = Tween<Size>(
             begin: Size(double.infinity, 260), end: Size(double.infinity, 320))
         .animate(
@@ -133,6 +134,7 @@ class _AuthCardState extends State<AuthCard>
     //Tween class knows how to animate between two values
     //Tween can't animate it just gives info on how to animate between two values
     //so called .animate
+    //changed to animated controller so not needed anymore(Used for builder)
 
     // _heightAnimation.addListener(() => setState(() {}));
   }
@@ -234,16 +236,15 @@ class _AuthCardState extends State<AuthCard>
       ),
       elevation: 8.0,
       //ch == child
-      child: AnimatedBuilder(
-        animation: _heightAnimation,
-        builder: (ctx, ch) => Container(
-            // height: _authMode == AuthMode.Signup ? 320 : 260,
-            height: _heightAnimation.value.height,
-            constraints:
-                BoxConstraints(minHeight: _heightAnimation.value.height),
-            width: deviceSize.width * 0.75,
-            padding: EdgeInsets.all(16.0),
-            child: ch),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+        height: _authMode == AuthMode.Signup ? 320 : 260,
+        // height: _heightAnimation.value.height,
+        constraints:
+            BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
+        width: deviceSize.width * 0.75,
+        padding: EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
