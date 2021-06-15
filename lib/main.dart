@@ -14,6 +14,7 @@ import './providers/products_provider.dart';
 import './screens/orders_screen.dart';
 import './screens/user_products_screen.dart';
 import './screens/auth_screen.dart';
+import './helpers/custom_route.dart';
 
 void main() => runApp(MyApp());
 
@@ -59,6 +60,12 @@ class MyApp extends StatelessWidget {
               primarySwatch: Colors.purple,
               accentColor: Colors.deepOrange,
               fontFamily: 'Lato',
+              pageTransitionsTheme: PageTransitionsTheme(
+                builders: {
+                  TargetPlatform.android: CustomPageTransitionBuilder(),
+                  TargetPlatform.iOS: CustomPageTransitionBuilder(),
+                },
+              ), //builders here is a map because you can make unique for each OS
             ),
             home: auth.isAuth
                 ? ProductsOverviewScreen()
